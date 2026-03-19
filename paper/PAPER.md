@@ -455,9 +455,9 @@ Their separation energy is released as photons.
 - Net: 0 = 0
 
 The 4D observer sees E = mc^2 (mass converts to photon energy).
-The 5D observer sees: separation energy is refunded. Nothing was
-created, nothing was destroyed. The pair returned to its canceling
-state in the time plane.
+The 5D observer sees: separation energy is refunded. The balance
+is restored. The pair returned to its equilibrium state in the
+time plane.
 
 ### 9.6 Why Same Mass for Particle and Antiparticle
 
