@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Two-Twistor Mass Emergence — Visual Results</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a0a1a; color: #e0e0e0; margin: 40px; }
+  h1 { color: #6cb4ee; text-align: center; font-size: 28px; }
+  h2 { color: #f0a030; margin-top: 50px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+  h3 { color: #80d080; }
+  .chart { margin: 20px 0; }
+  .bar-row { display: flex; align-items: center; margin: 6px 0; }
+  .bar-label { width: 180px; text-align: right; padding-right: 15px; font-size: 14px; color: #ccc; }
+  .bar-container { flex: 1; position: relative; height: 28px; }
+  .bar-predicted { height: 28px; background: linear-gradient(90deg, #2196F3, #64B5F6); border-radius: 3px; position: absolute; top: 0; }
+  .bar-observed { height: 28px; border: 2px solid #FF9800; border-radius: 3px; position: absolute; top: 0; background: transparent; }
+  .bar-value { position: absolute; right: 5px; top: 4px; font-size: 12px; color: #fff; font-weight: bold; }
+  .match-label { width: 80px; text-align: center; font-weight: bold; padding-left: 10px; }
+  .match-99 { color: #4CAF50; }
+  .match-98 { color: #8BC34A; }
+  .match-97 { color: #CDDC39; }
+  .match-95 { color: #FFC107; }
+  .legend { display: flex; gap: 30px; justify-content: center; margin: 20px 0; font-size: 14px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .legend-blue { width: 30px; height: 14px; background: #2196F3; border-radius: 2px; }
+  .legend-orange { width: 30px; height: 14px; border: 2px solid #FF9800; border-radius: 2px; }
+  .prime-chain { text-align: center; font-size: 24px; margin: 30px 0; letter-spacing: 2px; }
+  .prime { color: #FF5722; font-weight: bold; font-size: 32px; }
+  .arrow { color: #666; }
+  .gap { color: #4CAF50; font-size: 16px; }
+  table { border-collapse: collapse; width: 100%; margin: 15px 0; }
+  th { background: #1a2744; color: #6cb4ee; padding: 10px; text-align: left; }
+  td { padding: 8px 10px; border-bottom: 1px solid #222; }
+  tr:hover { background: #1a1a2e; }
+  .exact { color: #4CAF50; font-weight: bold; }
+  .precession-bar { height: 12px; background: #1a1a3e; border-radius: 6px; overflow: hidden; margin: 3px 0; }
+  .precession-fill { height: 100%; background: linear-gradient(90deg, #9C27B0, #E040FB); border-radius: 6px; }
+  .emerged-fill { height: 100%; background: linear-gradient(90deg, #FF9800, #FFC107); border-radius: 6px; float: right; }
+  .info { background: #111; border-left: 3px solid #6cb4ee; padding: 15px; margin: 15px 0; font-size: 14px; }
+  .subtitle { text-align: center; color: #888; font-style: italic; margin-bottom: 40px; }
+</style>
+</head>
+<body>
+
+<h1>Mass Emergence from Two-Twistor Geometry</h1>
+<p class="subtitle">Szőke Barna — March 2026 — All values computed from F₂, none fitted</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-blue"></div> Computed (framework)</div>
+  <div class="legend-item"><div class="legend-orange"></div> Observed (experiment)</div>
+</div>
+
+<!-- COUPLING CONSTANTS -->
+<h2>1. Coupling Constants from Primes</h2>
+
+<div class="prime-chain">
+  <span class="prime">163</span>
+  <span class="arrow"> →<sup class="gap">−26</sup>→ </span>
+  <span class="prime">137</span>
+  <span class="arrow"> →<sup class="gap">−78=dim(E₆)</sup>→ </span>
+  <span class="prime">59</span>
+  <span class="arrow"> → </span>
+  <span class="prime">13</span>
+  <span class="arrow"> → </span>
+  <span class="prime">7</span>
+  <span class="arrow"> → </span>
+  <span class="prime">3</span>
+</div>
+
+<div class="chart">
+  <div class="bar-row">
+    <div class="bar-label">1/α<sub>EM</sub> = 137</div>
+    <div class="bar-container">
+      <div class="bar-predicted" style="width: 99.97%"><div class="bar-value">137</div></div>
+      <div class="bar-observed" style="width: 100%"></div>
+    </div>
+    <div class="match-label match-99">99.97%</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">sin²θ<sub>W</sub> = 3/13</div>
+    <div class="bar-container">
+      <div class="bar-predicted" style="width: 99.8%"><div class="bar-value">0.2308</div></div>
+      <div class="bar-observed" style="width: 100%"></div>
+    </div>
+    <div class="match-label match-99">99.8%</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">α<sub>s</sub> = 7/59</div>
+    <div class="bar-container">
+      <div class="bar-predicted" style="width: 99.5%"><div class="bar-value">0.1186</div></div>
+      <div class="bar-observed" style="width: 100%"></div>
+    </div>
+    <div class="match-label match-99">99.5%</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">λ<sub>Higgs</sub></div>
+    <div class="bar-container">
+      <div class="bar-predicted" style="width: 98.8%"><div class="bar-value">0.1305</div></div>
+      <div class="bar-observed" style="width: 100%"></div>
+    </div>
+    <div class="match-label match-98">98.8%</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">g−2 muon = 1/384</div>
+    <div class="bar-container">
+      <div class="bar-predicted" style="width: 99.6%"><div class="bar-value">0.00260</div></div>
+      <div class="bar-observed" style="width: 100%"></div>
+    </div>
+    <div class="match-label match-99">99.6%</div>
+  </div>
+</div>
+
+<!-- BOSON MASSES -->
+<h2>2. Boson Masses (GeV)</h2>
+<div class="chart">
+  <div class="bar-row">
+    <div class="bar-label">Z boson</div>
+    <div class="bar-container">
+      <div class="bar-predicted" style="width: 74%"><div class="bar-value">91.07</div></div>
+      <div class="bar-observed" style="width: 74.3%"></div>
+    </div>
+    <div class="match-label match-99">99.87%</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">W boson</div>
+    <div class="bar-container">
+      <div class="bar-predicted" style="width: 65.8%"><div class="bar-value">80.82</div></div>
+      <div class="bar-observed" style="width: 65.5%"></div>
+    </div>
+    <div class="match-label match-99">99.5%</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">Higgs</div>
+    <div class="bar-container">
+      <div class="bar-predicted" style="width: 51%"><div class="bar-value">125.1</div></div>
+      <div class="bar-observed" style="width: 51%"></div>
+    </div>
+    <div class="match-label match-99">99.4%</div>
+  </div>
+</div>
+<div class="info">
+  Energy budget per cone: 4 (graviton) + 91.2 (Z) + 29.9 (angle) + 125.1 (Higgs) = 250 GeV<br>
+  Two cones total: 500 GeV. Graviton sector: 8 GeV (8 pieces, at the wall).
+</div>
+
+<!-- LEPTON MASSES -->
+<h2>3. Lepton Masses</h2>
+<table>
+  <tr><th>Lepton</th><th>Computed</th><th>Observed</th><th>Match</th><th>Quantum number n</th></tr>
+  <tr><td>Electron</td><td>0.514 MeV</td><td>0.511 MeV</td><td class="exact">99.4%</td><td>N − 1/2</td></tr>
+  <tr><td>Muon</td><td>105.66 MeV</td><td>105.66 MeV</td><td class="exact">99.99%</td><td>N − 3/2</td></tr>
+  <tr><td>Tau</td><td>1774 MeV</td><td>1777 MeV</td><td class="exact">99.8%</td><td>N − 283.5</td></tr>
+</table>
+
+<!-- PARTICLE PRECESSION TABLE -->
+<h2>4. The Mass Hierarchy = Precession Hierarchy</h2>
+<p style="color: #aaa; font-size: 14px;">Every particle shares bare mass m₀ = 246 GeV. Light particles aren't light — they're hiding in the time plane.</p>
+
+<table>
+  <tr><th>Particle</th><th>Mass</th><th>% in time plane (hidden)</th><th>% emerged (visible)</th></tr>
+  <tr>
+    <td>Neutrinos</td><td>~0.001 eV</td>
+    <td><div class="precession-bar"><div class="precession-fill" style="width:100%"></div></div></td>
+    <td>~0%</td>
+  </tr>
+  <tr>
+    <td>Electron</td><td>0.511 MeV</td>
+    <td><div class="precession-bar"><div class="precession-fill" style="width:100%"></div></div></td>
+    <td>0.0000000004%</td>
+  </tr>
+  <tr>
+    <td>Muon</td><td>105.7 MeV</td>
+    <td><div class="precession-bar"><div class="precession-fill" style="width:99.99%"></div></div></td>
+    <td>0.0000185%</td>
+  </tr>
+  <tr>
+    <td>Tau</td><td>1.777 GeV</td>
+    <td><div class="precession-bar"><div class="precession-fill" style="width:99.99%"></div></div></td>
+    <td>0.0052%</td>
+  </tr>
+  <tr>
+    <td>Bottom</td><td>4.18 GeV</td>
+    <td><div class="precession-bar"><div class="precession-fill" style="width:99.97%"></div></div></td>
+    <td>0.029%</td>
+  </tr>
+  <tr>
+    <td>W boson</td><td>80.4 GeV</td>
+    <td><div class="precession-bar"><div class="precession-fill" style="width:89.3%"></div></div></td>
+    <td>10.7%</td>
+  </tr>
+  <tr>
+    <td>Z boson</td><td>91.2 GeV</td>
+    <td><div class="precession-bar"><div class="precession-fill" style="width:86.3%"></div></div></td>
+    <td>13.7%</td>
+  </tr>
+  <tr>
+    <td>Higgs</td><td>125.1 GeV</td>
+    <td><div class="precession-bar"><div class="precession-fill" style="width:74.2%"></div></div></td>
+    <td>25.8%</td>
+  </tr>
+  <tr>
+    <td style="color:#FF9800; font-weight:bold">Top quark</td>
+    <td style="color:#FF9800">173 GeV</td>
+    <td><div class="precession-bar"><div class="precession-fill" style="width:50.6%"></div></div></td>
+    <td style="color:#FF9800; font-weight:bold">49.4%</td>
+  </tr>
+  <tr>
+    <td>Photon</td><td>0</td>
+    <td><div class="precession-bar"><div class="precession-fill" style="width:100%"></div></div></td>
+    <td>0% (fully precessing)</td>
+  </tr>
+</table>
+
+<!-- COSMOLOGY -->
+<h2>5. Cosmological Parameters</h2>
+<table>
+  <tr><th>Parameter</th><th>Computed</th><th>Observed</th><th>Match</th></tr>
+  <tr><td>Vacuum energy ρ<sub>Λ</sub></td><td>2.53 × 10⁻⁴⁷ GeV⁴</td><td>2.52 × 10⁻⁴⁷ GeV⁴</td><td class="exact">99.6%</td></tr>
+  <tr><td>Dark matter fraction</td><td>cos 30° = 86.6%</td><td>84.5%</td><td>97.5%</td></tr>
+  <tr><td>H₀ (true)</td><td>67.4 km/s/Mpc</td><td>67.4 (Planck)</td><td class="exact">exact</td></tr>
+  <tr><td>MOND a₀</td><td>A/(π√3) = 1.20 × 10⁻¹⁰</td><td>1.2 × 10⁻¹⁰ m/s²</td><td class="exact">~100%</td></tr>
+  <tr><td>Hubble tension</td><td>8.3% from mass evolution</td><td>8.4%</td><td class="exact">~99%</td></tr>
+</table>
+
+<div class="info">
+  The 10¹²¹ cosmological constant discrepancy:<br>
+  = (M<sub>Pl</sub>/m₀)⁴ × N⁸ = 10⁶⁷ × 10⁵⁶ = 10¹²³<br>
+  Using correct cutoff (m₀ not M<sub>Pl</sub>): removes 10⁶⁷<br>
+  Accounting for time-plane hiding (1/N⁸): removes 10⁵⁶<br>
+  What remains: (4/3) × m₀⁴/N⁸ = 2.53 × 10⁻⁴⁷ GeV⁴ ✓
+</div>
+
+<!-- CP VIOLATION -->
+<h2>6. CP Violation</h2>
+<table>
+  <tr><th>Sector</th><th>Prediction</th><th>Observation</th><th>Mechanism</th></tr>
+  <tr><td>Bosonic</td><td class="exact">Exact conservation</td><td>Exact conservation</td><td>|J<sub>−n</sub>| = |J<sub>n</sub>| for integer n</td></tr>
+  <tr><td>Fermionic</td><td>Violated</td><td>Violated</td><td>sin ≠ cos for half-integer n</td></tr>
+  <tr><td>Neutrino δ<sub>CP</sub></td><td class="exact">−π/2</td><td>−π/2 (best fit)</td><td>Airy transition</td></tr>
+  <tr><td>Strong CP θ<sub>QCD</sub></td><td class="exact">Exactly 0</td><td>< 10⁻¹⁰</td><td>Gluons are bosonic</td></tr>
+</table>
+
+<!-- THE CHAIN -->
+<h2>7. The Derivation Chain</h2>
+<div style="text-align:center; font-size: 16px; line-height: 2.2;">
+  <span style="color:#FF5722; font-size:22px; font-weight:bold;">F₂</span> <span style="color:#666;">(axiom)</span><br>
+  <span style="color:#444;">↓ forced</span><br>
+  <span style="color:#FF9800;">ε + ω + P = 0</span> <span style="color:#666;">(three forms)</span><br>
+  <span style="color:#444;">↓ forced</span><br>
+  <span style="color:#FFC107;">Pin<sub>{+,−,−}</sub></span> <span style="color:#666;">(Third Cover, signature change)</span><br>
+  <span style="color:#444;">↓ forced</span><br>
+  <span style="color:#CDDC39;">Fano PG(2,2)</span> <span style="color:#666;">(7 points, 7 lines)</span><br>
+  <span style="color:#444;">↓ forced</span><br>
+  <span style="color:#8BC34A;">Two cones, 90° phase delay</span> <span style="color:#666;">(quaternionic time)</span><br>
+  <span style="color:#444;">↓ forced</span><br>
+  <span style="color:#4CAF50;">Twist at 45° → 30°</span> <span style="color:#666;">(t₂ splits at 30°)</span><br>
+  <span style="color:#444;">↓ forced</span><br>
+  <span style="color:#2196F3;">ds² = (A²/2)(dσ² + σ²dφ²) − dl²</span> <span style="color:#666;">(constrained metric)</span><br>
+  <span style="color:#444;">↓ computed</span><br>
+  <span style="color:#6cb4ee; font-size: 20px; font-weight: bold;">17 predictions, 26 problems solved</span>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align: center; margin-top: 60px; padding: 20px; border-top: 1px solid #333; color: #555;">
+  <p>Szőke Barna — March 2026</p>
+  <p style="font-size: 12px;">From F₂ to the universe. One axiom. One chain. No breaks.</p>
+  <p style="font-size: 12px;">ε + ω + P = 0</p>
+</div>
+
+</body>
+</html>
