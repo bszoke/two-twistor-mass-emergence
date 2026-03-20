@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M(2, F₂) — The 16-Point Spacetime</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    background: #0c0c0f;
+    color: #c0b898;
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  .header {
+    text-align: center;
+    padding: 30px 20px 10px;
+  }
+  
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: #e8dcc8;
+  }
+  
+  .header .sub {
+    font-size: 11px;
+    color: #5a5040;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+  
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .btn {
+    background: #1a1a20;
+    border: 1px solid #2a2a35;
+    color: #8a8070;
+    padding: 8px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  
+  .btn:hover { border-color: #4a4a55; color: #c0b898; }
+  .btn.active { background: #252530; border-color: #c9a96e; color: #c9a96e; }
+  
+  .main {
+    display: flex;
+    gap: 0;
+    padding: 0 20px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  .graph-panel {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  svg {
+    width: 100%;
+    height: 600px;
+    display: block;
+  }
+  
+  .info-panel {
+    width: 340px;
+    padding: 20px;
+    background: #111115;
+    border-left: 1px solid #1e1e25;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-y: auto;
+    max-height: 640px;
+  }
+  
+  .info-panel h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: #c9a96e;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  
+  .info-panel .section {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #1a1a20;
+  }
+  
+  .stat { margin: 4px 0; }
+  .stat .label { color: #6a6050; }
+  .stat .val { color: #e8dcc8; }
+  .stat .val.gold { color: #c9a96e; }
+  .stat .val.blue { color: #6a9ec9; }
+  .stat .val.red { color: #c96a6a; }
+  .stat .val.green { color: #6ac96a; }
+  
+  .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 10px 0;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+  }
+  
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  
+  .matrix-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    fill: #6a6050;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+  
+  .tooltip {
+    position: fixed;
+    background: #1a1a22;
+    border: 1px solid #3a3a45;
+    padding: 10px 14px;
+    font-size: 12px;
+    border-radius: 4px;
+    pointer-events: none;
+    display: none;
+    z-index: 100;
+    max-width: 250px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  
+  .tooltip .tt-title {
+    color: #c9a96e;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  
+  .tooltip .tt-row {
+    color: #a09880;
+    font-size: 11px;
+    margin: 2px 0;
+  }
+  
+  .kernel-bar {
+    display: flex;
+    height: 20px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 6px 0;
+    border: 1px solid #2a2a35;
+  }
+  
+  .kernel-bar .sing-part {
+    background: #c9a96e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #0c0c0f;
+    font-weight: 700;
+  }
+  
+  .kernel-bar .nsing-part {
+    background: #6a9ec9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #0c0c0f;
+    font-weight: 700;
+  }
+  
+  @media (max-width: 900px) {
+    .main { flex-direction: column; }
+    .info-panel { width: 100%; max-height: none; border-left: none; border-top: 1px solid #1e1e25; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>M(2, 𝔽₂) — The 16 Points</h1>
+  <div class="sub">Q(a,b,c,d) = ad + bc &emsp;•&emsp; 10 singular &emsp;•&emsp; 6 invertible</div>
+</div>
+
+<div class="controls">
+  <button class="btn active" onclick="setView('null')">Null Separation (A)</button>
+  <button class="btn" onclick="setView('nonnull')">Non-null (Ā)</button>
+  <button class="btn" onclick="setView('dirac')">Dirac Edges (D)</button>
+  <button class="btn" onclick="setView('kernel')">Kernel of D²</button>
+  <button class="btn" onclick="setView('spectrum')">D² Spectrum</button>
+</div>
+
+<div class="main">
+  <div class="graph-panel">
+    <svg id="graph" viewBox="0 0 700 600"></svg>
+  </div>
+  <div class="info-panel" id="info"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const points = [
+  {idx:0, abcd:[0,0,0,0], Q:0, mat:"[[0,0],[0,0]]"},
+  {idx:1, abcd:[0,0,0,1], Q:0, mat:"[[0,0],[0,1]]"},
+  {idx:2, abcd:[0,0,1,0], Q:0, mat:"[[0,0],[1,0]]"},
+  {idx:3, abcd:[0,0,1,1], Q:0, mat:"[[0,0],[1,1]]"},
+  {idx:4, abcd:[0,1,0,0], Q:0, mat:"[[0,1],[0,0]]"},
+  {idx:5, abcd:[0,1,0,1], Q:0, mat:"[[0,1],[0,1]]"},
+  {idx:6, abcd:[0,1,1,0], Q:1, mat:"[[0,1],[1,0]]"},
+  {idx:7, abcd:[0,1,1,1], Q:1, mat:"[[0,1],[1,1]]"},
+  {idx:8, abcd:[1,0,0,0], Q:0, mat:"[[1,0],[0,0]]"},
+  {idx:9, abcd:[1,0,0,1], Q:1, mat:"[[1,0],[0,1]]"},
+  {idx:10,abcd:[1,0,1,0], Q:0, mat:"[[1,0],[1,0]]"},
+  {idx:11,abcd:[1,0,1,1], Q:1, mat:"[[1,0],[1,1]]"},
+  {idx:12,abcd:[1,1,0,0], Q:0, mat:"[[1,1],[0,0]]"},
+  {idx:13,abcd:[1,1,0,1], Q:1, mat:"[[1,1],[0,1]]"},
+  {idx:14,abcd:[1,1,1,0], Q:1, mat:"[[1,1],[1,0]]"},
+  {idx:15,abcd:[1,1,1,1], Q:0, mat:"[[1,1],[1,1]]"},
+];
+
+// Null-separation edges (A[i,j]=1)
+const edgesNull = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,8],[0,10],[0,12],[0,15],[1,2],[1,3],[1,4],[1,5],[1,9],[1,11],[1,13],[1,14],[2,3],[2,6],[2,7],[2,8],[2,10],[2,13],[2,14],[3,6],[3,7],[3,9],[3,11],[3,12],[3,15],[4,5],[4,6],[4,7],[4,8],[4,11],[4,12],[4,14],[5,6],[5,7],[5,9],[5,10],[5,13],[5,15],[6,7],[6,9],[6,10],[6,12],[6,14],[7,8],[7,11],[7,13],[7,15],[8,9],[8,10],[8,11],[8,12],[8,13],[9,10],[9,11],[9,12],[9,13],[10,11],[10,14],[10,15],[11,14],[11,15],[12,13],[12,14],[12,15],[13,14],[13,15],[14,15]];
+
+// Non-null edges
+const edgesNonnull = [[0,6],[0,7],[0,9],[0,11],[0,13],[0,14],[1,6],[1,7],[1,8],[1,10],[1,12],[1,15],[2,4],[2,5],[2,9],[2,11],[2,12],[2,15],[3,4],[3,5],[3,8],[3,10],[3,13],[3,14],[4,9],[4,10],[4,13],[4,15],[5,8],[5,11],[5,12],[5,14],[6,8],[6,11],[6,13],[6,15],[7,9],[7,10],[7,12],[7,14],[8,14],[8,15],[9,14],[9,15],[10,12],[10,13],[11,12],[11,13]];
+
+// Dirac edges (D[i,j] != 0, always cross Q=0 ↔ Q=1)
+const edgesDirac = [[1,9],[1,11],[1,13],[1,14],[2,6],[2,7],[2,13],[2,14],[3,6],[3,7],[3,9],[3,11],[4,6],[4,7],[4,11],[4,14],[5,6],[5,7],[5,9],[5,13],[6,10],[6,12],[7,8],[7,15],[8,9],[8,11],[8,13],[9,10],[9,12],[10,11],[10,14],[11,15],[12,13],[12,14],[13,15],[14,15]];
+
+// D² eigenvalues per block
+// sing: 0(x5), 3(x4), 24(x1)
+// nsing: 0(x1), 3(x4), 24(x1)
+
+// ============================================================
+// LAYOUT: Place Q=0 points on the left/top, Q=1 on the right/bottom
+// Use a bipartite-ish layout
+// ============================================================
+
+const cx = 350, cy = 300;
+const singPositions = [];
+const nsingPositions = [];
+
+// Singular points in a larger arc on the left
+const singIndices = [0,1,2,3,4,5,8,10,12,15];
+const nsingIndices = [6,7,9,11,13,14];
+
+const pos = {};
+
+// Arrange singular in a larger ellipse on the left
+singIndices.forEach((idx, i) => {
+  const angle = (i / singIndices.length) * Math.PI * 2 - Math.PI/2;
+  const rx = 200, ry = 220;
+  const ox = 280;
+  pos[idx] = {
+    x: ox + rx * Math.cos(angle),
+    y: cy + ry * Math.sin(angle)
+  };
+});
+
+// Arrange nonsingular in a smaller cluster on the right
+nsingIndices.forEach((idx, i) => {
+  const angle = (i / nsingIndices.length) * Math.PI * 2 - Math.PI/2;
+  const r = 100;
+  const ox = 520;
+  pos[idx] = {
+    x: ox + r * Math.cos(angle),
+    y: cy + r * Math.sin(angle)
+  };
+});
+
+// Point x_0 (zero matrix) is special — place at center-left
+pos[0] = { x: 280, y: cy };
+
+// ============================================================
+// RENDERING
+// ============================================================
+
+const svg = document.getElementById('graph');
+const tooltip = document.getElementById('tooltip');
+let currentView = 'null';
+
+const colors = {
+  sing: '#c9a96e',      // gold for Q=0
+  nsing: '#6a9ec9',     // blue for Q=1
+  edgeNull: '#2a2a20',
+  edgeNonnull: '#1a2a1a',
+  edgeDirac: '#c96a6a',
+  kernel: '#6ac98a',
+  ev3: '#c9a96e',
+  ev24: '#ff6a6a',
+};
+
+function render() {
+  let html = '';
+  
+  // Edges
+  let edges = [];
+  let edgeColor = colors.edgeNull;
+  let edgeWidth = 0.5;
+  let edgeOpacity = 0.3;
+  
+  if (currentView === 'null') {
+    edges = edgesNull; edgeColor = '#3a3520'; edgeWidth = 0.6; edgeOpacity = 0.5;
+  } else if (currentView === 'nonnull') {
+    edges = edgesNonnull; edgeColor = '#1a3535'; edgeWidth = 0.6; edgeOpacity = 0.5;
+  } else if (currentView === 'dirac') {
+    edges = edgesDirac; edgeColor = '#c96a6a'; edgeWidth = 1.2; edgeOpacity = 0.6;
+  } else if (currentView === 'kernel') {
+    edges = edgesDirac; edgeColor = '#222'; edgeWidth = 0.3; edgeOpacity = 0.15;
+  } else if (currentView === 'spectrum') {
+    edges = edgesDirac; edgeColor = '#222'; edgeWidth = 0.3; edgeOpacity = 0.15;
+  }
+  
+  edges.forEach(([i,j]) => {
+    html += `<line x1="${pos[i].x}" y1="${pos[i].y}" x2="${pos[j].x}" y2="${pos[j].y}" 
+             stroke="${edgeColor}" stroke-width="${edgeWidth}" opacity="${edgeOpacity}"/>`;
+  });
+  
+  // For kernel view: highlight the kernel dimensions
+  // sing kernel: 5 dims (x_0 is one explicit kernel vector)
+  // nsing kernel: 1 dim
+  
+  // Points
+  points.forEach(p => {
+    let r = 14;
+    let fill = p.Q === 0 ? colors.sing : colors.nsing;
+    let stroke = 'none';
+    let strokeW = 0;
+    let opacity = 1;
+    
+    if (currentView === 'kernel') {
+      // Kernel lives: 5 in sing, 1 in nsing
+      // Highlight proportionally
+      if (p.Q === 0) {
+        // 5/10 of singular dimensions are in kernel
+        fill = colors.sing;
+        stroke = colors.kernel;
+        strokeW = 3;
+        opacity = 0.9;
+      } else {
+        // 1/6 of nonsingular dimensions are in kernel
+        fill = colors.nsing;
+        stroke = colors.green;
+        strokeW = 1.5;
+        opacity = 0.6;
+      }
+      // Special: x_0 is explicitly in the kernel (the pure basis vector)
+      if (p.idx === 0) {
+        fill = colors.kernel;
+        stroke = '#fff';
+        strokeW = 2;
+        r = 18;
+      }
+    }
+    
+    if (currentView === 'spectrum') {
+      // Color by D² eigenvalue distribution
+      // sing: 0(x5), 3(x4), 24(x1) → avg eigenvalue = (0*5+3*4+24*1)/10 = 3.6
+      // nsing: 0(x1), 3(x4), 24(x1) → avg eigenvalue = (0+12+24)/6 = 6
+      if (p.Q === 0) {
+        fill = colors.sing;
+        r = 16;
+      } else {
+        fill = colors.nsing;
+        r = 16;
+      }
+    }
+    
+    html += `<circle cx="${pos[p.idx].x}" cy="${pos[p.idx].y}" r="${r}" 
+             fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}" opacity="${opacity}"
+             style="cursor:pointer" 
+             onmouseenter="showTip(event, ${p.idx})" 
+             onmouseleave="hideTip()"/>`;
+    
+    // Label
+    const label = `${p.abcd.join('')}`;
+    html += `<text x="${pos[p.idx].x}" y="${pos[p.idx].y + 1}" class="matrix-label" 
+             fill="${p.Q === 0 ? '#2a1a08' : '#0a1a2a'}" font-weight="700" font-size="8">${label}</text>`;
+  });
+  
+  // Region labels
+  html += `<text x="280" y="42" text-anchor="middle" fill="#c9a96e" font-size="13" 
+           font-family="Cormorant Garamond, serif" opacity="0.6">Q = 0 &nbsp;(singular, 10 pts)</text>`;
+  html += `<text x="520" y="42" text-anchor="middle" fill="#6a9ec9" font-size="13" 
+           font-family="Cormorant Garamond, serif" opacity="0.6">Q = 1 &nbsp;(invertible, 6 pts)</text>`;
+  
+  // Dividing line
+  html += `<line x1="400" y1="55" x2="400" y2="570" stroke="#1e1e25" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>`;
+  
+  svg.innerHTML = html;
+  updateInfo();
+}
+
+function showTip(event, idx) {
+  const p = points[idx];
+  const deg_null = edgesNull.filter(([i,j]) => i===idx || j===idx).length;
+  const deg_dirac = edgesDirac.filter(([i,j]) => i===idx || j===idx).length;
+  
+  let html = `<div class="tt-title">x<sub>${idx}</sub> = (${p.abcd.join(',')})</div>`;
+  html += `<div class="tt-row">Matrix: ${p.mat}</div>`;
+  html += `<div class="tt-row">Q = det = ${p.Q} → ${p.Q===0 ? 'SINGULAR' : 'INVERTIBLE'}</div>`;
+  html += `<div class="tt-row">γ = ${p.Q===0 ? '+1' : '−1'}</div>`;
+  html += `<div class="tt-row">Null-neighbors: ${deg_null}</div>`;
+  html += `<div class="tt-row">Dirac-neighbors: ${deg_dirac} (all cross Q)</div>`;
+  
+  if (idx === 0) {
+    html += `<div class="tt-row" style="color:#6ac98a;margin-top:4px">★ Zero matrix. Pure kernel vector of D².</div>`;
+  }
+  
+  tooltip.innerHTML = html;
+  tooltip.style.display = 'block';
+  tooltip.style.left = (event.clientX + 12) + 'px';
+  tooltip.style.top = (event.clientY - 10) + 'px';
+}
+
+function hideTip() {
+  tooltip.style.display = 'none';
+}
+
+function updateInfo() {
+  const panel = document.getElementById('info');
+  let html = '';
+  
+  if (currentView === 'null') {
+    html = `
+      <div class="section">
+        <h3>Null Separation Graph (A)</h3>
+        <p style="color:#8a8070;font-size:11px;line-height:1.6">
+          Two points x<sub>i</sub>, x<sub>j</sub> are connected when<br>
+          Q(x<sub>i</sub> + x<sub>j</sub>) = 0 — their difference is singular.
+        </p>
+        <div class="stat"><span class="label">Graph: </span><span class="val">srg(16, 9, 4, 6)</span></div>
+        <div class="stat"><span class="label">Edges: </span><span class="val">72</span></div>
+        <div class="stat"><span class="label">Degree: </span><span class="val">9 (every point)</span></div>
+      </div>
+      <div class="section">
+        <h3>Spectrum of A</h3>
+        <div class="stat"><span class="val gold">9</span> <span class="label">× 1 (trivial)</span></div>
+        <div class="stat"><span class="val gold">1</span> <span class="label">× 9</span></div>
+        <div class="stat"><span class="val gold">−3</span> <span class="label">× 6</span></div>
+        <div style="margin-top:8px;font-size:10px;color:#5a5040">
+          m<sub>A</sub>(x) = (x−9)(x−1)(x+3)<br>= x³ − 7x² − 21x + 27
+        </div>
+      </div>
+      <div class="section">
+        <h3>The SRG Identity</h3>
+        <div style="color:#e8dcc8;font-size:13px;text-align:center;padding:8px 0">
+          A² + 2A − 3I = 6J
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#c9a96e"></div> Q = 0 (singular, 10 pts)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#6a9ec9"></div> Q = 1 (invertible, 6 pts)</div>
+        <div class="legend-item"><div style="width:20px;height:2px;background:#3a3520"></div> Null edge (Q(x+y)=0)</div>
+      </div>`;
+  } else if (currentView === 'nonnull') {
+    html = `
+      <div class="section">
+        <h3>Non-null Graph (Ā)</h3>
+        <p style="color:#8a8070;font-size:11px;line-height:1.6">
+          The complement: connected when Q(x<sub>i</sub> + x<sub>j</sub>) = 1 — their difference is invertible.
+        </p>
+        <div class="stat"><span class="label">Graph: </span><span class="val">srg(16, 6, 2, 2)</span></div>
+        <div class="stat"><span class="label">Edges: </span><span class="val">48</span></div>
+        <div class="stat"><span class="label">Degree: </span><span class="val">6 (every point)</span></div>
+        <div class="stat"><span class="label">Type: </span><span class="val">L₂(4) lattice graph</span></div>
+      </div>
+      <div class="section">
+        <h3>Complement Spectrum</h3>
+        <div class="stat"><span class="val blue">6</span> <span class="label">× 1</span></div>
+        <div class="stat"><span class="val blue">2</span> <span class="label">× 9</span></div>
+        <div class="stat"><span class="val blue">−2</span> <span class="label">× 6</span></div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#c9a96e"></div> Q = 0 (singular)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#6a9ec9"></div> Q = 1 (invertible)</div>
+        <div class="legend-item"><div style="width:20px;height:2px;background:#1a3535"></div> Non-null edge</div>
+      </div>`;
+  } else if (currentView === 'dirac') {
+    html = `
+      <div class="section">
+        <h3>Dirac Operator D = A<sub>odd</sub></h3>
+        <p style="color:#8a8070;font-size:11px;line-height:1.6">
+          D = ½(A − γAγ)<br>
+          Only edges that CROSS the grading:<br>
+          singular ↔ invertible.
+        </p>
+        <div class="stat"><span class="label">Dirac edges: </span><span class="val red">36</span></div>
+        <div class="stat"><span class="label">All cross Q: </span><span class="val">✓</span></div>
+        <div class="stat"><span class="label">{D, γ} = 0: </span><span class="val">✓</span></div>
+      </div>
+      <div class="section">
+        <h3>Spectrum of D</h3>
+        <div class="stat"><span class="val red">−2√6</span> <span class="label">× 1 &ensp;(≈ −4.899)</span></div>
+        <div class="stat"><span class="val red">−√3</span> <span class="label">× 4 &ensp;(≈ −1.732)</span></div>
+        <div class="stat"><span class="val">0</span> <span class="label">× 6</span></div>
+        <div class="stat"><span class="val red">+√3</span> <span class="label">× 4 &ensp;(≈ +1.732)</span></div>
+        <div class="stat"><span class="val red">+2√6</span> <span class="label">× 1 &ensp;(≈ +4.899)</span></div>
+        <div style="margin-top:8px;font-size:10px;color:#5a5040">
+          m<sub>D</sub>(x) = x(x²−3)(x²−24)<br>= x⁵ − 27x³ + 72x
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#c9a96e"></div> Q = 0</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#6a9ec9"></div> Q = 1</div>
+        <div class="legend-item"><div style="width:20px;height:2px;background:#c96a6a"></div> Dirac edge (crosses Q)</div>
+      </div>`;
+  } else if (currentView === 'kernel') {
+    html = `
+      <div class="section">
+        <h3>Kernel of D²</h3>
+        <p style="color:#8a8070;font-size:11px;line-height:1.6">
+          D² is block-diagonal: it preserves the Q=0 / Q=1 split.<br>
+          The kernel decomposes exactly.
+        </p>
+      </div>
+      <div class="section">
+        <h3>Kernel Decomposition</h3>
+        <div class="stat"><span class="label">Total dim: </span><span class="val gold">6</span></div>
+        <div class="stat"><span class="label">From Q=0 (singular): </span><span class="val gold">5</span></div>
+        <div class="stat"><span class="label">From Q=1 (invertible): </span><span class="val blue">1</span></div>
+        <div class="kernel-bar">
+          <div class="sing-part" style="width:${5/6*100}%">5</div>
+          <div class="nsing-part" style="width:${1/6*100}%">1</div>
+        </div>
+        <div style="font-size:10px;color:#5a5040;margin-top:4px">
+          ← Q=0 &emsp;&emsp;&emsp;&emsp;&emsp; Q=1 →
+        </div>
+      </div>
+      <div class="section">
+        <h3>The Zero Matrix</h3>
+        <p style="color:#6ac98a;font-size:11px;line-height:1.6">
+          x₀ = (0,0,0,0) is a pure kernel vector.<br>
+          D has NO edges from x₀ (row 0 of D is all zeros).<br>
+          So D·e₀ = 0, hence D²·e₀ = 0.
+        </p>
+      </div>
+      <div class="section">
+        <h3>The Index</h3>
+        <div class="stat"><span class="label">ind(D⁺) = </span><span class="val gold">dim ker(D⁺) − dim ker(D⁻)</span></div>
+        <div class="stat"><span class="label">= </span><span class="val gold">5 − 1 = 4</span></div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#c9a96e;border:2px solid #6ac98a"></div> Q=0 with kernel (5 dim)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#6a9ec9;border:2px solid #6ac98a"></div> Q=1 with kernel (1 dim)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#6ac98a;border:2px solid #fff"></div> Zero matrix (pure kernel)</div>
+      </div>`;
+  } else if (currentView === 'spectrum') {
+    html = `
+      <div class="section">
+        <h3>D² Spectrum by Block</h3>
+        <p style="color:#8a8070;font-size:11px;line-height:1.6">
+          D² commutes with γ, so it is block-diagonal.<br>
+          Each eigenvalue splits between the two sectors.
+        </p>
+      </div>
+      <div class="section">
+        <h3>D²|<sub>Q=0</sub> (10×10 block)</h3>
+        <div class="stat"><span class="val gold">0</span> <span class="label">× 5</span></div>
+        <div class="stat"><span class="val gold">3</span> <span class="label">× 4</span></div>
+        <div class="stat"><span class="val gold">24</span> <span class="label">× 1</span></div>
+      </div>
+      <div class="section">
+        <h3>D²|<sub>Q=1</sub> (6×6 block)</h3>
+        <div class="stat"><span class="val blue">0</span> <span class="label">× 1</span></div>
+        <div class="stat"><span class="val blue">3</span> <span class="label">× 4</span></div>
+        <div class="stat"><span class="val blue">24</span> <span class="label">× 1</span></div>
+      </div>
+      <div class="section">
+        <h3>Combined</h3>
+        <table style="font-size:11px;width:100%;border-collapse:collapse">
+          <tr style="color:#5a5040"><td>eigenvalue</td><td>Q=0</td><td>Q=1</td><td>total</td></tr>
+          <tr><td style="color:#c9a96e">0</td><td>5</td><td>1</td><td style="color:#e8dcc8">6</td></tr>
+          <tr><td style="color:#c9a96e">3</td><td>4</td><td>4</td><td style="color:#e8dcc8">8</td></tr>
+          <tr><td style="color:#c9a96e">24</td><td>1</td><td>1</td><td style="color:#e8dcc8">2</td></tr>
+        </table>
+      </div>
+      <div class="section">
+        <h3>Minimal Polynomial</h3>
+        <div style="color:#e8dcc8;font-size:13px;text-align:center;padding:8px 0">
+          m<sub>D²</sub>(x) = x(x − 3)(x − 24)
+        </div>
+        <div style="color:#e8dcc8;font-size:13px;text-align:center">
+          = x³ − 27x² + 72x
+        </div>
+        <div style="color:#5a5040;font-size:11px;text-align:center;margin-top:8px">
+          tr(D²) = 72 = |GO⁺(4,2)|
+        </div>
+      </div>`;
+  }
+  
+  panel.innerHTML = html;
+}
+
+function setView(view) {
+  currentView = view;
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  render();
+}
+
+// Initial render
+render();
+</script>
+</body>
+</html>

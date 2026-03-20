@@ -91,25 +91,28 @@ The original time T1 has quaternionic structure: two vectors t1, t2
 with 90-degree phase delay. This is the minimum condition for two
 independent structures from one time.
 
-The two T1 vectors drive two cones growing from the Fano plane:
+Both cones originate in the Fano plane, lying perpendicular to each
+other and rotating in opposite directions:
 - Cone A: clockwise winding (driven by t1 vector)
 - Cone B: counter-clockwise winding (driven by t2 vector, 90 deg delayed)
-- Perpendicular axes, both in the Fano plane
 
 The 7 Fano lines wrap into the cones as they grow. The wrappings
 accumulate as topological cycles (Betti numbers).
 
-At 90-degree opening (45-degree half-angle from each axis), the two
-cones contact. 45 degrees is forced: it is the maximum half-angle for
-two perpendicular axes (45 + 45 = 90).
+At 45-degree half-angle, the two perpendicular cones contact
+(45 + 45 = 90 degrees between axes). This is forced geometry.
 
-At contact: the twist. Pin_{+,-,-} activates. The t2 vector splits:
-- t2 stays with Cone A (visible sector)
-- t2' breaks off at 30 degrees from t2, goes with Cone B (dark sector)
+At contact, fragmentation begins. The energy of the fragmentation
+asymmetry tilts the cones to 30 degrees. At this angle, the photon
+mode becomes available (n = N, full precessional sweep on the φ-circle).
+
+At 30 degrees, Pin_{+,-,-} activates. The t2 vector splits:
+- t2 stays with Cone A (visible sector), defining the φ-circle
+- t2' = t2 sin(30°) = t2/2 departs at 30° with Cone B (dark sector),
+  defining the φ'-circle
 
 30 degrees is forced: sin(30) = 1/2 (the only non-trivial exact rational
-sine), equilateral cross-section (maximum rigidity). The cone cannot
-compress further without breaking trilateral symmetry.
+sine).
 
 ### Step 6: The Constrained Metric (forced by cone symmetry + flatness)
 
@@ -254,7 +257,78 @@ of mass emergence.
 
 ---
 
-## Problems Resolved (26)
+## Dark Sector (Cone B)
+
+The second cone (Cone B) defines the dark sector. It shares the same
+bare mass m0 = 246.22 GeV but operates on the φ'-circle with half
+the radial time: σ' = σ/2, giving N' = N/2.
+
+**Universal scaling law:** Every dark fermion mass is exactly √2 times
+its visible counterpart. Origin: mass ~ 1/√σ, ratio = √(σ/σ') = √2.
+
+| Dark particle | Dark mass | Visible mass | Ratio |
+|--------------|-----------|-------------|-------|
+| Dark electron | 0.727 MeV | 0.514 MeV | √2 |
+| Dark muon | 149.4 MeV | 105.66 MeV | √2 |
+| Dark tau | 2509 MeV | 1774 MeV | √2 |
+
+**Key result:** The dark electron mass = √(2m₀²/N) = 105.67 MeV = muon mass
+(100.0% match). The muon IS the dark electron's shadow in the visible sector.
+
+**Three generations from two φ-circles:**
+- 1st generation: φ-circle eigenstates (e, u, d)
+- 2nd generation: φ'-circle shadows (μ, c, s)
+- 3rd generation: φ × φ' interference (τ, t, b)
+
+**Bottom quark:** m_b = (7/3) × m_tau. The 7 comes from Fano plane points,
+the 3 from points per line = quark colors. Computed: 4148 MeV, observed:
+4180 MeV (99.2% match).
+
+**Graviton wall:** 8 gravitons at ~1 GeV each sit at the boundary σ = Δ
+between visible and dark sectors. Dark matter pressure = sin²(30°) = 1/4.
+Visible matter pressure = cos²(30°) = 3/4. One wall, one gravity.
+
+**Bullet Cluster consistency:** Dark-visible cross section suppressed by
+ε² ~ 5.6 × 10⁻¹⁰ (two α-vertices across the graviton wall). Dark matter
+passes through visible matter 1.8 billion times more weakly.
+
+---
+
+## Derived Equations
+
+### Maxwell from Torsion
+
+All four Maxwell equations emerge from the torsion structure:
+
+| Maxwell equation | Torsion origin |
+|-----------------|----------------|
+| ∇·B = 0 | φ is S¹ (circle has no boundary) |
+| ∇×E = −∂B/∂t | Bianchi identity: dF = 0 |
+| ∇·E = ρ/ε₀ | TEGR field equation (torsion source) |
+| ∇×B = μ₀J + ∂E/∂t/c² | TEGR field equation (spatial part) |
+
+Constants ε₀, μ₀ from α = 1/137. Zero free constants in EM.
+
+### Schrödinger from 5D
+
+The Schrödinger equation is the non-relativistic limit of the 5D wave
+equation:
+
+□₅Ψ = 0 → separate on φ-circle → (□₄ + m_n²)ψ_n = 0 → Bessel equation
+→ non-rel limit: iℏ ∂ψ/∂t = −ℏ²/(2m) ∇²ψ
+
+Potentials from contorsion: V_grav from K₀₁, V_EM from K₀ᵢ.
+
+### General Relativity as Late-Time Limit
+
+The identity R(ω) = −D(K) − K∧K shows that GR curvature equals torsion
+squared. The Einstein equation is a rewriting of the TEGR torsion field
+equation, not an independent law. GR is the late-time macroscopic limit
+of the two-twistor framework.
+
+---
+
+## Problems Resolved (33+)
 
 The framework resolves the following longstanding problems in physics.
 Each resolution is a computed consequence of the derivation chain above.
@@ -285,6 +359,13 @@ Each resolution is a computed consequence of the derivation chain above.
 24. Hubble tension — H0 is epoch-dependent through m_app(sigma)
 25. Penrose finite-field obstruction — resolved by Pin covers + Compartment Algebra
 26. Pin_{+,-,-} realization — Orbit III of Z2 x Z2 exotic bicharacter
+27. Three generations origin — two phi-circles (phi, phi'), three generation types
+28. Muon identity — dark electron shadow in visible sector (105.67 MeV exact)
+29. Bottom quark mass — m_b = (7/3)*m_tau from Fano geometry (99.2%)
+30. Maxwell equations — all four derived from torsion (dF=0 Bianchi, d*F=*J TEGR)
+31. Schrodinger equation — non-relativistic limit of 5D wave equation on phi-circle
+32. GR as late-time limit — Einstein equation = rewritten TEGR torsion equation
+33. Bullet Cluster — dark-visible cross section suppressed by eps^2 ~ 5.6e-10
 
 ---
 
@@ -370,6 +451,9 @@ Delta = 4*alpha^2/9), not from measured masses. Zero external inputs.
 5. Normal neutrino mass ordering
 6. Dark matter fraction = cos(30 deg) = 86.6%
 7. Permanent entanglement via (t2, t2') eigenstate at 30-degree spin angle
+8. Universal sqrt(2) dark/visible mass ratio for all fermions
+9. Dark photon kinetic mixing eps = 4*alpha^2/9 = 2.37e-5
+10. Dark Chandrasekhar limit at 0.7 M_sun (half of visible)
 
 ## Intellectual Foundations
 
@@ -383,13 +467,21 @@ Delta = 4*alpha^2/9), not from measured masses. Zero external inputs.
 ## Repository Structure
 
 ```
-paper/          - The main paper (forthcoming)
+DOCUMENTATION_INDEX.md  - Complete intellectual lineage and 23 original innovations
+paper/          - Papers (PAPER.md/docx/pdf, PAPER_II.md/docx/pdf)
 algebra/        - Algebraic foundation documents (13 documents)
                   Pin covers, Compartment Algebra, Bockstein bridge,
                   VO+(4,2), PG(5,2), Fano-E8, Penrose Transform,
                   Bundle Structure, Extension sequence
-codes/          - Computational codes (forthcoming)
-data/           - Numerical results and tables (forthcoming)
+codes/          - Computational codes (Python + JavaScript)
+                  01-06_*.py (original computations)
+                  compute_*.js (dark sector, Maxwell, Schrodinger, etc.)
+data/           - Numerical results (complete_results.md/docx/pdf,
+                  Unified_Mass_Table.xlsx)
+visuals/        - Interactive visualizations (10 files)
+                  HTML: equation poster, results charts, graph hierarchy,
+                  spacetime, four cones, step-out angle diagram
+                  JSX: cone rotation, precession lab, precession hierarchy
 ```
 
 ---

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph Hierarchy: VO⁺(4,2) → Q⁺(5,2)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0a0a0f;
+  color: #c8c8d0;
+  font-family: 'IBM Plex Mono', monospace;
+  overflow-x: hidden;
+}
+
+.header {
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  font-family: 'Crimson Pro', serif;
+  font-weight: 300;
+  font-size: 22px;
+  letter-spacing: 0.5px;
+  color: #e8e8f0;
+}
+
+.header .subtitle {
+  font-size: 11px;
+  color: #666;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  padding: 16px 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #aaa;
+  padding: 6px 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+.btn:hover { background: rgba(255,255,255,0.08); color: #ddd; }
+.btn.active { background: rgba(100,160,255,0.12); border-color: rgba(100,160,255,0.3); color: #8bc; }
+
+.info-bar {
+  padding: 12px 32px;
+  font-size: 11px;
+  color: #777;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  line-height: 1.7;
+}
+.info-bar .highlight { color: #a8b8d0; }
+.info-bar .eigenval { color: #c9a87c; }
+
+.canvas-container {
+  width: 100%;
+  height: calc(100vh - 220px);
+  min-height: 500px;
+  position: relative;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.legend {
+  position: absolute;
+  bottom: 20px;
+  left: 24px;
+  font-size: 10px;
+  line-height: 2;
+  pointer-events: none;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tooltip {
+  position: absolute;
+  background: rgba(15,15,25,0.95);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 8px 12px;
+  font-size: 11px;
+  pointer-events: none;
+  display: none;
+  border-radius: 4px;
+  max-width: 260px;
+  line-height: 1.6;
+}
+.tooltip .tt-title { color: #e0e0f0; font-weight: 500; }
+.tooltip .tt-detail { color: #888; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>VO⁺(4,2) → Q⁺(5,2) — The Cohomological Ascent</h1>
+    <div class="subtitle">From 16-point affine spacetime to 35-point compactified Klein quadric</div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn active" onclick="setView('level0')">Level 0 — VO⁺(4,2)</button>
+  <button class="btn" onclick="setView('level1')">Level 1 — Q⁺(5,2)</button>
+  <button class="btn" onclick="setView('embed')">Embedding</button>
+  <button class="btn" onclick="setView('boundary')">Boundary</button>
+  <button class="btn" onclick="toggleEdges()">Toggle edges</button>
+  <button class="btn" onclick="toggleRotation()">Rotate</button>
+  <button class="btn" onclick="toggleNullColoring()">Null/Non-null</button>
+</div>
+
+<div class="info-bar" id="infoBar">
+  <span class="highlight">srg(16, 9, 4, 6)</span> — 16 vertices, 72 edges.
+  Eigenvalues: <span class="eigenval">9¹, 1⁹, (−3)⁶</span>.
+  The affine spacetime over F₂: Mat(2, GF(2)) with null-separation adjacency.
+</div>
+
+<div class="canvas-container">
+  <canvas id="graphCanvas"></canvas>
+  <div class="legend" id="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#5588cc"></div> Null (det=0, Q=0)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#cc6644"></div> Non-null (det=1, Q=1)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#446633"></div> Boundary (conformal completion)</div>
+  </div>
+  <div class="tooltip" id="tooltip"></div>
+</div>
+
+<script>
+// ============================================================
+// DATA — computed from Python
+// ============================================================
+const DATA = {"adj_16": [[0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1], [1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0], [1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0], [1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1], [1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0], [1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1], [0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0], [0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0], [0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0], [1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1], [0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1], [1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1], [0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1], [0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1], [1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0]], "adj_35": [[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0], [1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1], [1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1], [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0], [1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0], [1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1], [1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], [1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1], [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0], [1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], [1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0], [1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1], [1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0], [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1], [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1], [0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0], [0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0], [0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1], [0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1], [0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0], [0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1], [0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0], [0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0], [0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1], [0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1], [0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1], [0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1], [0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1], [0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0]], "labels_16": ["[00;00]", "[00;01]", "[00;10]", "[00;11]", "[01;00]", "[01;01]", "[01;10]", "[01;11]", "[10;00]", "[10;01]", "[10;10]", "[10;11]", "[11;00]", "[11;01]", "[11;10]", "[11;11]"], "embed_map": {"0": 19, "1": 23, "2": 27, "3": 31, "4": 20, "5": 24, "6": 28, "7": 32, "8": 21, "9": 25, "10": 29, "11": 33, "12": 22, "13": 26, "14": 30, "15": 34}, "boundary_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], "null_16": [0, 1, 2, 3, 4, 5, 8, 10, 12, 15], "nonnull_16": [6, 7, 9, 11, 13, 14], "matrices_16": [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1], [0, 1, 0, 0], [0, 1, 0, 1], [0, 1, 1, 0], [0, 1, 1, 1], [1, 0, 0, 0], [1, 0, 0, 1], [1, 0, 1, 0], [1, 0, 1, 1], [1, 1, 0, 0], [1, 1, 0, 1], [1, 1, 1, 0], [1, 1, 1, 1]], "plucker_coords": [[0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 1, 1], [0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 1], [0, 0, 1, 0, 1, 0], [0, 0, 1, 0, 1, 1], [0, 0, 0, 1, 0, 0], [0, 0, 0, 1, 0, 1], [0, 1, 0, 0, 0, 0], [0, 1, 0, 0, 0, 1], [0, 1, 0, 1, 0, 0], [0, 1, 0, 1, 0, 1], [0, 0, 0, 1, 1, 0], [0, 0, 0, 1, 1, 1], [0, 1, 1, 0, 0, 0], [0, 1, 1, 0, 0, 1], [0, 1, 1, 1, 1, 0], [0, 1, 1, 1, 1, 1], [1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 1, 0], [1, 0, 0, 1, 0, 0], [1, 0, 0, 1, 1, 0], [1, 0, 1, 0, 0, 0], [1, 0, 1, 0, 1, 0], [1, 0, 1, 1, 0, 1], [1, 0, 1, 1, 1, 1], [1, 1, 0, 0, 0, 0], [1, 1, 0, 0, 1, 1], [1, 1, 0, 1, 0, 0], [1, 1, 0, 1, 1, 1], [1, 1, 1, 0, 0, 0], [1, 1, 1, 0, 1, 1], [1, 1, 1, 1, 0, 1], [1, 1, 1, 1, 1, 0]], "eigenvalues_35": {"-3": 20, "3": 14, "18": 1}, "eigenvalues_16": {"-3": 6, "1": 9, "9": 1}};
+
+// ============================================================
+// GRAPH LAYOUT — force-directed in 3D
+// ============================================================
+const canvas = document.getElementById('graphCanvas');
+const ctx = canvas.getContext('2d');
+
+let W, H;
+function resize() {
+  const r = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  W = rect.width; H = rect.height;
+  canvas.width = W * r; canvas.height = H * r;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.setTransform(r, 0, 0, r, 0, 0);
+}
+resize();
+window.addEventListener('resize', resize);
+
+// State
+let currentView = 'level0';
+let showEdges = true;
+let rotating = true;
+let nullColoring = false;
+let rotAngle = 0;
+let hoverNode = -1;
+
+// Node positions — 3D
+const N35 = 35;
+const N16 = 16;
+const pos3D = new Array(N35);
+const vel3D = new Array(N35);
+
+// Initialize positions on a sphere
+for (let i = 0; i < N35; i++) {
+  const phi = Math.acos(1 - 2 * (i + 0.5) / N35);
+  const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+  const r = 180;
+  pos3D[i] = [
+    r * Math.sin(phi) * Math.cos(theta),
+    r * Math.sin(phi) * Math.sin(theta),
+    r * Math.cos(phi)
+  ];
+  vel3D[i] = [0, 0, 0];
+}
+
+// Embed map: matrix index -> line index in the 35
+const embedMap = {};
+for (const [k, v] of Object.entries(DATA.embed_map)) {
+  embedMap[parseInt(k)] = v;
+}
+const embeddedIndices = new Set(Object.values(embedMap));
+const boundaryIndices = new Set(DATA.boundary_indices);
+
+// Force-directed layout step
+function forceStep() {
+  const adj = DATA.adj_35;
+  const k = 0.008; // spring constant
+  const rep = 800; // repulsion
+  const damp = 0.85;
+  const dt = 0.8;
+
+  for (let i = 0; i < N35; i++) {
+    let fx = 0, fy = 0, fz = 0;
+    for (let j = 0; j < N35; j++) {
+      if (i === j) continue;
+      const dx = pos3D[i][0] - pos3D[j][0];
+      const dy = pos3D[i][1] - pos3D[j][1];
+      const dz = pos3D[i][2] - pos3D[j][2];
+      const dist = Math.sqrt(dx*dx + dy*dy + dz*dz) + 0.1;
+      
+      // Repulsion
+      const fr = rep / (dist * dist);
+      fx += fr * dx / dist;
+      fy += fr * dy / dist;
+      fz += fr * dz / dist;
+      
+      // Attraction (if adjacent)
+      if (adj[i][j]) {
+        const fa = -k * (dist - 100);
+        fx += fa * dx / dist;
+        fy += fa * dy / dist;
+        fz += fa * dz / dist;
+      }
+    }
+    
+    // Center pull
+    fx -= pos3D[i][0] * 0.001;
+    fy -= pos3D[i][1] * 0.001;
+    fz -= pos3D[i][2] * 0.001;
+    
+    vel3D[i][0] = (vel3D[i][0] + fx * dt) * damp;
+    vel3D[i][1] = (vel3D[i][1] + fy * dt) * damp;
+    vel3D[i][2] = (vel3D[i][2] + fz * dt) * damp;
+  }
+  
+  for (let i = 0; i < N35; i++) {
+    pos3D[i][0] += vel3D[i][0];
+    pos3D[i][1] += vel3D[i][1];
+    pos3D[i][2] += vel3D[i][2];
+  }
+}
+
+// Run initial layout
+for (let step = 0; step < 300; step++) forceStep();
+
+// 3D -> 2D projection with rotation
+function project(p3, angle) {
+  const ca = Math.cos(angle), sa = Math.sin(angle);
+  const cb = Math.cos(angle * 0.3), sb = Math.sin(angle * 0.3);
+  // Rotate around Y then X
+  let x = p3[0] * ca + p3[2] * sa;
+  let z = -p3[0] * sa + p3[2] * ca;
+  let y = p3[1] * cb - z * sb;
+  let z2 = p3[1] * sb + z * cb;
+  
+  const scale = 600 / (600 + z2);
+  return [W/2 + x * scale, H/2 + y * scale, z2, scale];
+}
+
+// Node appearance
+function nodeColor(i) {
+  if (nullColoring) {
+    // Check if this is an embedded spacetime point
+    let matIdx = -1;
+    for (const [k, v] of Object.entries(embedMap)) {
+      if (v === i) { matIdx = parseInt(k); break; }
+    }
+    if (matIdx >= 0) {
+      if (DATA.null_16.includes(matIdx)) return '#5588cc';
+      else return '#cc6644';
+    }
+    return '#446633';
+  }
+  
+  if (currentView === 'embed' || currentView === 'boundary') {
+    if (embeddedIndices.has(i)) return '#5588cc';
+    return '#446633';
+  }
+  return '#7799bb';
+}
+
+function nodeRadius(i) {
+  const base = (currentView === 'level0' && !embeddedIndices.has(i)) ? 0 :
+               (currentView === 'level1') ? 4 :
+               (currentView === 'embed' && embeddedIndices.has(i)) ? 6 :
+               (currentView === 'embed' && !embeddedIndices.has(i)) ? 2.5 :
+               (currentView === 'boundary' && !embeddedIndices.has(i)) ? 6 :
+               (currentView === 'boundary' && embeddedIndices.has(i)) ? 3 : 4;
+  return base;
+}
+
+function nodeVisible(i) {
+  if (currentView === 'level0') return embeddedIndices.has(i);
+  return true;
+}
+
+function edgeVisible(i, j) {
+  if (currentView === 'level0') {
+    return embeddedIndices.has(i) && embeddedIndices.has(j);
+  }
+  if (currentView === 'embed') return true;
+  if (currentView === 'boundary') return true;
+  return true;
+}
+
+// Render
+function render() {
+  if (rotating) rotAngle += 0.003;
+  
+  ctx.clearRect(0, 0, W, H);
+  
+  // Background gradient
+  const bg = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W*0.6);
+  bg.addColorStop(0, '#10101a');
+  bg.addColorStop(1, '#0a0a0f');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+  
+  const adj = DATA.adj_35;
+  
+  // Project all nodes
+  const proj = [];
+  for (let i = 0; i < N35; i++) {
+    proj[i] = project(pos3D[i], rotAngle);
+  }
+  
+  // Sort by depth for painter's algorithm
+  const sorted = Array.from({length: N35}, (_, i) => i);
+  sorted.sort((a, b) => proj[b][2] - proj[a][2]);
+  
+  // Draw edges first
+  if (showEdges) {
+    for (let i = 0; i < N35; i++) {
+      for (let j = i+1; j < N35; j++) {
+        if (!adj[i][j]) continue;
+        if (!edgeVisible(i, j)) continue;
+        if (!nodeVisible(i) || !nodeVisible(j)) continue;
+        
+        const depth = (proj[i][2] + proj[j][2]) / 2;
+        const alpha = Math.max(0.02, Math.min(0.15, 0.08 * (1 - depth/400)));
+        
+        let edgeColor = `rgba(120,160,200,${alpha})`;
+        
+        // Highlight edges of hovered node
+        if (hoverNode >= 0 && (i === hoverNode || j === hoverNode)) {
+          edgeColor = `rgba(180,200,255,0.35)`;
+        }
+        
+        // Color boundary edges differently
+        if (currentView === 'boundary') {
+          if (boundaryIndices.has(i) && boundaryIndices.has(j)) {
+            edgeColor = `rgba(80,140,80,${alpha * 2})`;
+          } else if (boundaryIndices.has(i) || boundaryIndices.has(j)) {
+            edgeColor = `rgba(140,160,100,${alpha * 1.5})`;
+          }
+        }
+        
+        ctx.beginPath();
+        ctx.moveTo(proj[i][0], proj[i][1]);
+        ctx.lineTo(proj[j][0], proj[j][1]);
+        ctx.strokeStyle = edgeColor;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+  
+  // Draw nodes
+  for (const i of sorted) {
+    if (!nodeVisible(i)) continue;
+    const [x, y, z, sc] = proj[i];
+    const r = nodeRadius(i) * sc;
+    if (r < 0.5) continue;
+    
+    const col = nodeColor(i);
+    const alpha = Math.max(0.3, Math.min(1, 0.7 + (300 - z) / 600));
+    
+    // Glow
+    if (r > 2) {
+      const glow = ctx.createRadialGradient(x, y, 0, x, y, r * 3);
+      glow.addColorStop(0, col + '30');
+      glow.addColorStop(1, col + '00');
+      ctx.beginPath();
+      ctx.arc(x, y, r * 3, 0, Math.PI * 2);
+      ctx.fillStyle = glow;
+      ctx.fill();
+    }
+    
+    // Node
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = col;
+    ctx.globalAlpha = alpha;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    
+    // Highlight hovered
+    if (i === hoverNode) {
+      ctx.beginPath();
+      ctx.arc(x, y, r + 2, 0, Math.PI * 2);
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  }
+  
+  requestAnimationFrame(render);
+}
+
+// Mouse interaction
+canvas.addEventListener('mousemove', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  
+  let closest = -1;
+  let closestDist = 20;
+  
+  for (let i = 0; i < N35; i++) {
+    if (!nodeVisible(i)) continue;
+    const [x, y] = project(pos3D[i], rotAngle);
+    const d = Math.sqrt((x-mx)**2 + (y-my)**2);
+    if (d < closestDist) {
+      closestDist = d;
+      closest = i;
+    }
+  }
+  
+  hoverNode = closest;
+  const tooltip = document.getElementById('tooltip');
+  
+  if (closest >= 0) {
+    let matIdx = -1;
+    for (const [k, v] of Object.entries(embedMap)) {
+      if (v === closest) { matIdx = parseInt(k); break; }
+    }
+    
+    let html = '';
+    if (matIdx >= 0) {
+      const m = DATA.matrices_16[matIdx];
+      const det = (m[0]*m[3] + m[1]*m[2]) % 2;
+      html = `<div class="tt-title">Spacetime point #${matIdx}</div>`;
+      html += `<div class="tt-detail">Matrix: [${m[0]}${m[1]};${m[2]}${m[3]}]</div>`;
+      html += `<div class="tt-detail">det = ${det} (${det === 0 ? 'null' : 'non-null'})</div>`;
+      html += `<div class="tt-detail">Plücker: (${DATA.plucker_coords[closest].join(',')})</div>`;
+      const nbrs16 = DATA.adj_16[matIdx].reduce((s,v) => s+v, 0);
+      const nbrs35 = DATA.adj_35[closest].reduce((s,v) => s+v, 0);
+      html += `<div class="tt-detail">Neighbors in VO⁺: ${nbrs16} | in Q⁺: ${nbrs35}</div>`;
+    } else {
+      html = `<div class="tt-title">Boundary point #${closest}</div>`;
+      html += `<div class="tt-detail">Conformal completion</div>`;
+      html += `<div class="tt-detail">Plücker: (${DATA.plucker_coords[closest].join(',')})</div>`;
+      const nbrs35 = DATA.adj_35[closest].reduce((s,v) => s+v, 0);
+      html += `<div class="tt-detail">Neighbors in Q⁺: ${nbrs35}</div>`;
+    }
+    
+    tooltip.innerHTML = html;
+    tooltip.style.display = 'block';
+    tooltip.style.left = (e.clientX + 14) + 'px';
+    tooltip.style.top = (e.clientY - 10) + 'px';
+  } else {
+    tooltip.style.display = 'none';
+  }
+});
+
+// Controls
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  const info = document.getElementById('infoBar');
+  if (v === 'level0') {
+    info.innerHTML = '<span class="highlight">srg(16, 9, 4, 6)</span> — 16 vertices, 72 edges. Eigenvalues: <span class="eigenval">9¹, 1⁹, (−3)⁶</span>. The affine spacetime: Mat(2, GF(2)) with null-separation adjacency. The lowest cohomological graph.';
+  } else if (v === 'level1') {
+    info.innerHTML = '<span class="highlight">srg(35, 18, 9, 9)</span> — 35 vertices, 315 edges. Eigenvalues: <span class="eigenval">18¹, 3¹⁴, (−3)²⁰</span>. The Klein quadric Q⁺(5,2): compactified spacetime. Lines of PG(3,2) as vertices, meeting iff they intersect. Contains VO⁺(4,2) as the big Schubert cell. λ = μ = 9: a conference graph.';
+  } else if (v === 'embed') {
+    info.innerHTML = '<span class="highlight">Embedding</span> — <span class="eigenval">16 blue</span> = VO⁺(4,2) affine spacetime inside <span class="eigenval">35</span> total. The 16 matrices embed via Plücker coordinates with <span class="highlight">zero adjacency mismatches</span>. The Schubert cell: graphs of linear maps V₂ → V₁.';
+  } else if (v === 'boundary') {
+    info.innerHTML = '<span class="highlight">Boundary</span> — <span class="eigenval">19 green</span> = conformal completion. Decomposition: 35 = 16 (affine) + 18 (pencils: 3 × 6) + 1 (point at infinity = V₁ itself). This is the finite analogue of compactifying C⁴ to Gr₂(C⁴).';
+  }
+}
+
+function toggleEdges() { showEdges = !showEdges; }
+function toggleRotation() { rotating = !rotating; }
+function toggleNullColoring() { nullColoring = !nullColoring; }
+
+render();
+</script>
+</body>
+</html>

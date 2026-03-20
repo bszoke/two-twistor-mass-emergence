@@ -13,10 +13,11 @@ March 2026
 We derive the Standard Model particle spectrum from a single axiom: the
 ground field F2. The algebraic structure of F2^2 forces three bilinear
 forms satisfying epsilon + omega + P = 0, which generate Pin covers
-permitting signature change. Two cones growing from the Fano plane
-PG(2,2), driven by quaternionic time with 90-degree phase delay, contact
-at 45-degree half-angle and twist. The twist splits one time vector at
-30 degrees, creating a second time dimension. The resulting constrained
+permitting signature change. Two cones originate perpendicular to each other in the Fano plane
+PG(2,2), rotating in opposite directions. At 45-degree half-angle the
+cones contact and fragment; the fragmentation asymmetry tilts them to
+30 degrees, where the photon mode emerges. The tilt splits one time
+vector, creating a second time dimension. The resulting constrained
 metric ds^2 = (A^2/2)(d_sigma^2 + sigma^2 d_phi^2) - dl^2 yields exact
 geodesic solutions with mass emergence m_app = m0 sqrt(1 - n^2 epsilon),
 universal precession sweep Delta_phi = pi/2, and quantized time-plane
@@ -214,34 +215,37 @@ At 90 degrees: maximally independent.
 
 ### 5.2 Two Cones
 
-The two T1 vectors drive two cones growing from the Fano plane:
+Both cones originate in the Fano plane, lying perpendicular to each
+other and rotating in opposite directions:
 
 - Cone A: clockwise winding of Fano lines (driven by t1)
 - Cone B: counter-clockwise winding (driven by t2, 90 deg delayed)
 
 The cones are perpendicular (inheriting the 90-degree phase delay)
-and counter-rotating.
+and counter-rotating within the plane.
 
-### 5.3 Growth and Contact
+### 5.3 Growth, Contact, and Fragmentation
 
-As the Fano lines wrap around the cone axes, the cones grow. Their
-half-angle increases toward 45 degrees — the maximum before two
-perpendicular cones contact (45 + 45 = 90 degrees between axes).
+As the Fano lines wrap around the cone axes, the half-angle increases.
+At 45-degree half-angle, the two perpendicular cones contact
+(45 + 45 = 90 degrees between axes). This is forced geometry.
 
-At 45-degree half-angle: the cones touch. This is forced geometry.
+At contact, fragmentation begins. The energy of the fragmentation
+asymmetry tilts the cones to 30 degrees. At this angle, the photon
+mode becomes available: n = N with full precessional sweep on the
+φ-circle.
 
-### 5.4 The Twist
+### 5.4 The Tilt and Time Split
 
-At contact, the two counter-rotating cones twist. Pin_{+,-,-}
-activates — spatial and temporal exchange.
+At 30 degrees, Pin_{+,-,-} activates — spatial and temporal exchange.
 
 The t2 vector splits:
-- t2 remains with Cone A (visible sector)
-- t2' breaks off at 30 degrees from t2, goes with Cone B (dark sector)
+- t2 remains with Cone A (visible sector), defining the φ-circle
+- t2' = t2 sin(30°) = t2/2 departs at 30° with Cone B (dark sector),
+  defining the φ'-circle
 
 The 30-degree angle is forced: sin(30) = 1/2 (the only non-trivial
-exact rational sine). The equilateral cross-section at 30 degrees
-provides maximum rigidity.
+exact rational sine).
 
 ### 5.5 The Result
 

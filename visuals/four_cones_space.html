@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #07070d; color: #ccc; font-family: 'Courier New', monospace; overflow: hidden; }
+#info {
+  position: fixed; top: 12px; left: 12px; z-index: 10;
+  font-size: 10px; line-height: 1.8; color: #555;
+}
+#info b { color: #aaa; }
+#controls {
+  position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+  z-index: 10; display: flex; gap: 8px; align-items: center;
+  background: rgba(7,7,13,0.9); padding: 8px 16px; border-radius: 4px;
+  border: 1px solid #1a1a28; font-size: 9px;
+}
+button { padding: 4px 14px; border: none; border-radius: 3px; cursor: pointer;
+  font-family: inherit; font-weight: 700; font-size: 9px; background: #222; color: #666; }
+</style>
+</head>
+<body>
+
+<div id="info">
+  <b>CONE 1</b> (green solid): AB pair — T1 at 45° above horizontal<br>
+  <b>CONE 1'</b> (green dashed): AB mirror — T1' opposite to T1, momenta cancel<br>
+  <b>CONE 2</b> (purple solid): CD pair — T2' cracked, ⊥ to T1, step-out 30°<br>
+  <b>CONE 2'</b> (purple dashed): CD mirror — T2'' opposite to T2', momenta cancel<br>
+  <br>
+  <b>Green pair:</b> colinear, momenta cancel → no net momentum<br>
+  <b>Purple pair:</b> colinear, momenta cancel → no net momentum<br>
+  <b>But:</b> green pair ⊥ purple pair → emergent √2 M combined<br>
+  <br>
+  Drag to orbit &bull; Scroll to zoom
+</div>
+
+<div id="controls">
+  <button onclick="autoOrbit=!autoOrbit">AUTO ORBIT ON/OFF</button>
+  <button onclick="camDist=400;camTh=-15;camPh=25;">RESET VIEW</button>
+  <button onclick="camTh=-89;camPh=0;">TOP</button>
+  <button onclick="camTh=0;camPh=0;">FRONT</button>
+  <button onclick="camTh=0;camPh=90;">SIDE</button>
+  <button onclick="camTh=-35;camPh=45;">ALONG T1</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 2000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(devicePixelRatio);
+renderer.setClearColor(0x07070d);
+document.body.appendChild(renderer.domElement);
+
+const S = 100;
+const sq2 = Math.sqrt(2);
+
+// Stage axes
+function addAx(f, t, c) {
+  const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...f), new THREE.Vector3(...t)]);
+  scene.add(new THREE.Line(g, new THREE.LineBasicMaterial({ color: c, transparent: true, opacity: 0.1 })));
+}
+addAx([-220,0,0],[220,0,0], 0xff4444);
+addAx([0,-220,0],[0,220,0], 0x44ff44);
+addAx([0,0,-220],[0,0,220], 0x4488ff);
+
+// Horizontal plane
+const pm = new THREE.Mesh(
+  new THREE.RingGeometry(5, 200, 64),
+  new THREE.MeshBasicMaterial({ color: 0x333344, transparent: true, opacity: 0.03, side: THREE.DoubleSide })
+);
+pm.rotation.x = -Math.PI/2;
+scene.add(pm);
+
+// Origin
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(4, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffffff })));
+
+// Build cone helper
+function buildCone(axDir, halfDeg, len, color, opacity, dashed) {
+  const grp = new THREE.Group();
+  const ha = halfDeg * Math.PI / 180;
+  const r = len * Math.tan(ha);
+  const ax = new THREE.Vector3(...axDir).normalize();
+  
+  // Axis
+  const axEnd = ax.clone().multiplyScalar(len);
+  const ag = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), axEnd]);
+  const am = dashed
+    ? new THREE.LineDashedMaterial({ color, transparent: true, opacity: opacity*1.5, dashSize: 6, gapSize: 4 })
+    : new THREE.LineBasicMaterial({ color, transparent: true, opacity: opacity*1.5 });
+  const al = new THREE.Line(ag, am);
+  if (dashed) al.computeLineDistances();
+  grp.add(al);
+
+  // Tip
+  const tip = new THREE.Mesh(new THREE.SphereGeometry(3, 8, 8),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: opacity*2 }));
+  tip.position.copy(axEnd);
+  grp.add(tip);
+
+  // Perp basis
+  let p1 = new THREE.Vector3(1,0,0);
+  if (Math.abs(ax.dot(p1)) > 0.9) p1 = new THREE.Vector3(0,1,0);
+  p1.crossVectors(p1, ax).normalize();
+  // Recompute to ensure true perpendicularity
+  p1 = new THREE.Vector3().crossVectors(ax, p1.x === 0 && p1.y === 0 && p1.z === 0 ? new THREE.Vector3(0,1,0) : p1);
+  // Simpler approach
+  let tmp = new THREE.Vector3(1,0,0);
+  if (Math.abs(ax.dot(tmp)) > 0.9) tmp = new THREE.Vector3(0,1,0);
+  p1 = new THREE.Vector3().crossVectors(ax, tmp).normalize();
+  const p2 = new THREE.Vector3().crossVectors(ax, p1).normalize();
+
+  // Mantle lines
+  const nL = 20;
+  for (let i = 0; i < nL; i++) {
+    const a = (i/nL)*Math.PI*2;
+    const dir = new THREE.Vector3()
+      .addScaledVector(ax, Math.cos(ha))
+      .addScaledVector(p1, Math.sin(ha)*Math.cos(a))
+      .addScaledVector(p2, Math.sin(ha)*Math.sin(a))
+      .normalize().multiplyScalar(len/Math.cos(ha));
+    const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), dir]);
+    const lm = dashed
+      ? new THREE.LineDashedMaterial({ color, transparent: true, opacity: opacity*0.2, dashSize: 4, gapSize: 3 })
+      : new THREE.LineBasicMaterial({ color, transparent: true, opacity: opacity*0.2 });
+    const ll = new THREE.Line(lg, lm);
+    if (dashed) ll.computeLineDistances();
+    grp.add(ll);
+  }
+
+  // Base circle
+  const cpts = [];
+  for (let i = 0; i <= 64; i++) {
+    const a = (i/64)*Math.PI*2;
+    cpts.push(new THREE.Vector3()
+      .addScaledVector(ax, len)
+      .addScaledVector(p1, r*Math.cos(a))
+      .addScaledVector(p2, r*Math.sin(a)));
+  }
+  const cg = new THREE.BufferGeometry().setFromPoints(cpts);
+  const cm = dashed
+    ? new THREE.LineDashedMaterial({ color, transparent: true, opacity: opacity*0.5, dashSize: 5, gapSize: 3 })
+    : new THREE.LineBasicMaterial({ color, transparent: true, opacity: opacity*0.5 });
+  const cl = new THREE.Line(cg, cm);
+  if (dashed) cl.computeLineDistances();
+  grp.add(cl);
+
+  return grp;
+}
+
+// ============================================================
+// THE FOUR CONES
+// ============================================================
+// Convention: Three.js Y = up (vertical), X = right, Z = toward viewer
+
+// T1: 45° above horizontal in the XY plane (Three.js)
+// comp coords (x,y,z) with z=up → Three.js (x, z, y) with y=up
+// T1_comp = (1/√2, 0, 1/√2) → T1_three = (1/√2, 1/√2, 0)
+const T1 = [1/sq2, 1/sq2, 0];
+const T1_mirror = [-1/sq2, -1/sq2, 0];
+
+// T2' cracked: perpendicular to T1
+// comp: (-0.5, 0.7071, 0.5) → Three.js: (-0.5, 0.5, 0.7071)
+const T2 = [-0.5, 0.5, 1/sq2];
+const T2_mirror = [0.5, -0.5, -1/sq2];
+
+const coneLen = S * 1.3;
+
+// Cone 1: AB, solid green
+scene.add(buildCone(T1, 45, coneLen, 0x06d6a0, 1.0, false));
+
+// Cone 1': AB mirror, dashed green
+scene.add(buildCone(T1_mirror, 45, coneLen, 0x06d6a0, 0.4, true));
+
+// Cone 2: CD, solid purple
+scene.add(buildCone(T2, 45, coneLen, 0xd660ff, 1.0, false));
+
+// Cone 2': CD mirror, dashed purple
+scene.add(buildCone(T2_mirror, 45, coneLen, 0xd660ff, 0.4, true));
+
+// ============================================================
+// LABELS
+// ============================================================
+function addLabel(text, pos, color) {
+  const c = document.createElement('canvas');
+  c.width = 300; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.font = 'bold 26px Courier New';
+  ctx.fillStyle = color;
+  ctx.fillText(text, 4, 38);
+  const tex = new THREE.CanvasTexture(c);
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+  const sp = new THREE.Sprite(mat);
+  sp.position.set(...pos);
+  sp.scale.set(65, 14, 1);
+  scene.add(sp);
+}
+
+const L = coneLen * 1.1;
+addLabel('T1 (45°)', [T1[0]*L+10, T1[1]*L+10, T1[2]*L], '#06d6a0');
+addLabel("T1' mirror", [T1_mirror[0]*L-10, T1_mirror[1]*L-10, T1_mirror[2]*L], '#068660');
+addLabel("T2' (30° out)", [T2[0]*L+10, T2[1]*L+10, T2[2]*L+10], '#d660ff');
+addLabel("T2'' mirror", [T2_mirror[0]*L-10, T2_mirror[1]*L-10, T2_mirror[2]*L-10], '#8630aa');
+
+// ============================================================
+// ANGLE ARCS
+// ============================================================
+function makeArc(v1, v2, radius, color, opacity) {
+  const a = new THREE.Vector3(...v1).normalize();
+  const b = new THREE.Vector3(...v2).normalize();
+  const pts = [];
+  for (let i = 0; i <= 30; i++) {
+    const f = i/30;
+    pts.push(new THREE.Vector3().lerpVectors(a, b, f).normalize().multiplyScalar(radius));
+  }
+  const g = new THREE.BufferGeometry().setFromPoints(pts);
+  scene.add(new THREE.Line(g, new THREE.LineBasicMaterial({ color, transparent: true, opacity })));
+  return pts;
+}
+
+// 90° arc: T1 to T2'
+const arc90 = makeArc(T1, T2, S*0.4, 0xe04040, 0.6);
+addLabel('90°', [arc90[15].x+6, arc90[15].y+6, arc90[15].z], '#e04040');
+
+// 90° arc: T1' to T2'' (mirrors also perpendicular)
+makeArc(T1_mirror, T2_mirror, S*0.35, 0xe04040, 0.25);
+
+// 45° arc: T1 to horizontal
+const horiz = [1, 0, 0];
+const arc45 = makeArc(horiz, T1, S*0.5, 0x06d6a0, 0.35);
+addLabel('45°', [arc45[10].x+6, arc45[10].y+5, arc45[10].z], '#06d6a0');
+
+// 30° arc: T2' to its horizontal projection
+const T2_horiz = [T2[0], 0, T2[2]]; // project out vertical
+const T2hn = new THREE.Vector3(...T2_horiz).normalize();
+const arc30 = makeArc([T2hn.x, T2hn.y, T2hn.z], T2, S*0.45, 0xd660ff, 0.5);
+addLabel('30°', [arc30[7].x-12, arc30[7].y+5, arc30[7].z], '#d660ff');
+
+// 90° arc: T1 to T2_mirror (should also be 90° since T2_mirror = -T2' and T1·(-T2') = 0)
+// Actually T1 · T2_mirror = -T1 · T2' = 0 ✓
+makeArc(T1, T2_mirror, S*0.3, 0xe04040, 0.2);
+
+// ============================================================
+// CAMERA
+// ============================================================
+let camDist = 400, camTh = -15, camPh = 25;
+let autoOrbit = true;
+let dragging = false, dragS = {};
+
+renderer.domElement.addEventListener('mousedown', e => { dragging=true; autoOrbit=false; dragS={x:e.clientX,y:e.clientY,t:camTh,p:camPh}; });
+addEventListener('mousemove', e => { if(!dragging)return; camPh=dragS.p+(e.clientX-dragS.x)*0.3; camTh=Math.max(-89,Math.min(89,dragS.t+(e.clientY-dragS.y)*0.3)); });
+addEventListener('mouseup', ()=>dragging=false);
+renderer.domElement.addEventListener('wheel', e => { camDist=Math.max(100,Math.min(800,camDist+e.deltaY*0.5)); });
+
+function updateCam() {
+  if (autoOrbit) camPh += 0.12;
+  const tr=camTh*Math.PI/180, pr=camPh*Math.PI/180;
+  camera.position.set(camDist*Math.cos(tr)*Math.sin(pr), camDist*Math.sin(-tr)+15, camDist*Math.cos(tr)*Math.cos(pr));
+  camera.lookAt(0, 5, 0);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  updateCam();
+  renderer.render(scene, camera);
+}
+addEventListener('resize', ()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
+animate();
+</script>
+</body>
+</html>
