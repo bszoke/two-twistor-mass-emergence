@@ -2,8 +2,6 @@
 
 ## Pin Covers, Compartment Algebra, and the Constrained Two-Time Metric
 
-**Szőke Barna**
-
 March 2026
 
 ---
@@ -601,4 +599,6 @@ This work rests on insights from:
 
 ---
 
-Copyright 2026 Szőke Barna. All rights reserved.
+Copyright 2026. All rights reserved.
+
+**Author:** Szőke Barna

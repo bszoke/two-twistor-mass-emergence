@@ -2,8 +2,6 @@
 
 ## Pin Covers, Compartment Algebra, and the Constrained Two-Time Metric
 
-**Author:** Szőke Barna
-
 **Date:** March 2026
 
 ---
@@ -454,6 +452,40 @@ Delta = 4*alpha^2/9), not from measured masses. Zero external inputs.
 8. Universal sqrt(2) dark/visible mass ratio for all fermions
 9. Dark photon kinetic mixing eps = 4*alpha^2/9 = 2.37e-5
 10. Dark Chandrasekhar limit at 0.7 M_sun (half of visible)
+11. Tensor-to-scalar ratio r = 1/169 = 1/13^2 = 0.00592 (testable by LiteBIRD ~2032)
+12. r is epoch-dependent: r(sigma) = (1/169)*exp(pi - 2*arctan(sigma/sigma_0))
+13. BH ringdown Q_220/Q_221 = 13/4 = 3.25 for ALL events (testable LIGO IR1, Sept 2026)
+14. Final BH spin (equal mass) = cos(45) = 1/sqrt(2) = 0.707
+15. CMB quadrupole suppression ~83% from counter-rotation cancellation
+16. GW amplitude ceiling = sin(30)*sin(pi/13) = 0.120
+
+## Part III: Poinsot Geometry and Gravitational Waves
+
+The single-cone framework (one cone, two counter-rotating hemispheres)
+reveals three geometric thresholds at exact rational inertia ratios:
+
+| Angle | I1/I3 | Significance |
+|-------|-------|-------------|
+| 60 deg | 7/6 | BE-shifted spherical point |
+| 45 deg | 5/2 | Contact angle |
+| 30 deg | 13/2 | Equilateral stabilization |
+
+The counter-rotation brakes due to Bose-Einstein density asymmetry
+(P(identical rho) = 0). Braking energy = torsion = gravity. Final
+state: only precession remains (no spin). Graviton energy = 3.78 GeV/cone.
+
+**GW250114 retrodict** (Jan 14, 2025, PRL Jan 29, 2026):
+- Q_220/Q_221: predicted 13/4 = 3.250, measured 3.231 (99.4% match)
+- Final spin: predicted cos(45) = 0.707, measured 0.69 (97.6% match)
+- Frequency f_220: predicted 251 Hz, measured 251 Hz (exact)
+
+**Problems resolved in Part III (34-39):**
+34. Causality in (2,3) signature — constraint prevents CTC
+35. Poinsot duality — classical mechanics = quantum mass emergence
+36. Irreversibility — birth = local entropy decrease
+37. Symmetry breaking — occurs in entropy, not space
+38. Gravity origin — braking energy of counter-rotation
+39. SMBH formation — precession snapshots, not accreted objects
 
 ## Intellectual Foundations
 
@@ -467,21 +499,16 @@ Delta = 4*alpha^2/9), not from measured masses. Zero external inputs.
 ## Repository Structure
 
 ```
-DOCUMENTATION_INDEX.md  - Complete intellectual lineage and 23 original innovations
-paper/          - Papers (PAPER.md/docx/pdf, PAPER_II.md/docx/pdf)
-algebra/        - Algebraic foundation documents (13 documents)
-                  Pin covers, Compartment Algebra, Bockstein bridge,
-                  VO+(4,2), PG(5,2), Fano-E8, Penrose Transform,
-                  Bundle Structure, Extension sequence
-codes/          - Computational codes (Python + JavaScript)
-                  01-06_*.py (original computations)
-                  compute_*.js (dark sector, Maxwell, Schrodinger, etc.)
-data/           - Numerical results (complete_results.md/docx/pdf,
-                  Unified_Mass_Table.xlsx)
-visuals/        - Interactive visualizations (10 files)
-                  HTML: equation poster, results charts, graph hierarchy,
-                  spacetime, four cones, step-out angle diagram
-                  JSX: cone rotation, precession lab, precession hierarchy
+paper/          - Papers (PAPER.md/docx/pdf, PAPER_II, PAPER_III)
+algebra/        - Algebraic foundations (13 documents + DOCUMENTATION_INDEX)
+codes/          - Computational codes
+                  01-06_*.py  Part I (quarks, couplings, leptons, cosmology)
+                  compute_*.js  Part II (dark sector, Maxwell, Schrodinger)
+                  07-17_*.py  Part III (Poinsot, braking, BH, GW, CMB, BE)
+data/           - Numerical results (complete_results.md/docx/pdf)
+visuals/        - Interactive visualizations (HTML, JSX, PNG)
+                  Equation poster, CMB modulation, results charts,
+                  cone geometry, Poinsot 3D, Bose-Einstein plots
 ```
 
 ---
@@ -508,6 +535,11 @@ correct numbers or it does not. It does.
 
 ## License
 
-All rights reserved. Copyright 2026 Szőke Barna.
+All rights reserved. Copyright 2026.
 
 Prior art established by this repository's git commit timestamps.
+
+---
+
+**Author:** Szőke Barna
+**DOI:** 10.5281/zenodo.19140795

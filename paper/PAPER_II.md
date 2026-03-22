@@ -2,8 +2,6 @@
 
 ## Consequences of the Two-Twistor Framework: Part II
 
-**Szőke Barna**
-
 March 2026
 
 ---
@@ -786,4 +784,6 @@ dimensions, forced into existence by the algebraic identity
 
 ---
 
-Copyright 2026 Szőke Barna. All rights reserved.
+Copyright 2026. All rights reserved.
+
+**Author:** Szőke Barna

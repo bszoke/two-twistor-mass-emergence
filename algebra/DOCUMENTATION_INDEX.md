@@ -130,10 +130,17 @@
 - **Content:** Both cones lie perpendicular in the Fano plane, rotating in opposite directions. At 45° half-angle the cones contact and fragment; the fragmentation asymmetry energy tilts them to 30°, where the photon mode emerges.
 - **Status:** All documents updated and consistent
 
+### Part III: From Poinsot Geometry to Gravitational Waves
+- **Derived March 20-22, 2026**
+- **Document:** `paper/PAPER_III.md`
+- **Content:** Single-cone framework, Poinsot ellipsoid evolution (exact fractions 7/6, 5/2, 13/2), braking → torsion → gravity, Bose-Einstein symmetry breaking, c₁/c₂ modulation (E/B modes), tensor-to-scalar ratio r = 1/169 (epoch-dependent), black hole ringdown Q = 13/4 (GW250114 retrodict 99.4%), LIGO IR1 predictions
+- **Key results:** 9 new predictions (48 total), 6 new problems resolved (39 total)
+- **Status:** Complete paper (Part III)
+
 ### Computational Codes
 - **Location:** `codes/` directory
-- **Content:** 6 Python scripts (01-06_*.py) reproducing all Part I numerical results + JavaScript codes for dark sector, Maxwell, Schrödinger, experiments, and document generation
-- **Status:** Complete, self-contained
+- **Content:** 01-06_*.py (Part I), compute_*.js (Part II), 07-17_*.py (Part III: Poinsot, braking, BH, GW, CMB, BE)
+- **Status:** Complete, 23 codes total
 
 ---
 
@@ -153,6 +160,8 @@ Author (Pin covers, Compartment Algebra, Bockstein bridge)
 Author + metric (mass emergence, 17 predictions, 26 problems)
     ↓
 Author + Part II (dark sector, Maxwell, Schrödinger, GR — 32 predictions, 33+ problems)
+    ↓
+Author + Part III (Poinsot geometry, GW predictions — 48 predictions, 39 problems)
 ```
 
 ## VIII. WHAT THE AUTHOR CONTRIBUTED (original innovations)
@@ -185,3 +194,17 @@ Author + Part II (dark sector, Maxwell, Schrödinger, GR — 32 predictions, 33+
 21. **GR as late-time limit** — R(ω) = −D(K) − K∧K, Einstein equation = rewritten TEGR
 22. **Graviton wall** — 8 gravitons at σ = Δ boundary, ~1 GeV each
 23. **Bullet Cluster consistency** — dark-visible suppression ε² ~ 5.6 × 10⁻¹⁰
+
+### Poinsot Geometry and Gravitational Waves (March 2026, Part III)
+24. **Single-cone framework** — one cone, two hemispheres (simplifies Penrose two-twistor)
+25. **Poinsot exact fractions** — I₁/I₃ = 7/6 (60°), 5/2 (45°), 13/2 (30°)
+26. **Causality in (2,3)** — constraint prevents closed timelike curves (#34)
+27. **Gravity from braking** — counter-rotation spin-down → torsion → gravitational field (#38)
+28. **BE symmetry breaking** — P(perfect symmetry) = 0, event is thermodynamic necessity (#37)
+29. **c₁/c₂ modulation** — E-mode and B-mode from two time vectors, E ⊥ B
+30. **Tensor-to-scalar ratio** — r = 1/169 = 1/13², epoch-dependent (#42)
+31. **BH ringdown Q-factor** — Q₂₂₀/Q₂₂₁ = 13/4 = 3.25, constant for all events (#45)
+32. **GW250114 retrodict** — Q = 3.25 vs measured 3.231 (99.4%), spin = 0.707 vs 0.69 (97.6%)
+33. **SMBH as precession snapshot** — not accreted objects, M-sigma from (I₃/I₁)² (#39)
+34. **GW amplitude ceiling** — B_max = sin(30)·sin(π/13) = 0.120 (#48)
+35. **IR1 prediction** — Q = 13/4 for all events, testable from Sept 2026, decisive by Jan 2027
