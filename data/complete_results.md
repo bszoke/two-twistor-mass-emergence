@@ -1,6 +1,5 @@
 # Complete Numerical Results
 
-## Author: Szőke Barna
 ## Date: March 2026
 
 All values below are COMPUTED from the framework.
@@ -315,3 +314,7 @@ Constants eps0, mu0 from alpha = 1/137. Zero free constants in EM.
 - Free parameters: 0 (beyond F2 axiom)
 - Measured inputs: 0 (N derived from N*Delta = 254, Delta = 4*alpha^2/9)
 - m_e, m_mu used as cross-check (confirm N to 98.8%), not as inputs
+
+---
+
+**Author:** Szőke Barna
